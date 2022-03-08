@@ -84,7 +84,7 @@ ssh-keygen -t ed25519
 ```
 Hit enter at the prompts to accept the defaults.
 
-Configure SSH by creating `~/.ssh/config`. Here is a starting point with some defaults for all hosts, add your customizations for your particular hosts:
+Configure SSH by creating `~/.ssh/config`. Here is a starting point with some defaults for all hosts, add your customizations for your particular hosts (see references below for more info):
 ```
 echo <<EOF > ~/.ssh/config
 Host *
@@ -108,7 +108,13 @@ After creating the config file, make sure the file permissions are correct.
 ```
 chmod 600 ~/.ssh/config
 ```
-References:
+### References:
+SSH consumes configuration in this order:
+1. Command line
+2. User config file (~/.ssh/config)
+3. System config file (/etc/ssh/ssh_config)
+The FIRST place a config value is found, it will be used (later values do not override earlier values). This means that you can specify options on the commandline to override values in your config file. It also means that your config file should be written with the most specific host matching options at the top, to the least specific on the bottom.
+
 > * SSH client config - https://manpages.ubuntu.com/manpages/focal/en/man5/ssh_config.5.html
 > * SSH commandline - https://manpages.ubuntu.com/manpages/focal/en/man1/ssh.1.html
 > * SSH Daemon config - https://manpages.ubuntu.com/manpages/focal/en/man5/sshd_config.5.html

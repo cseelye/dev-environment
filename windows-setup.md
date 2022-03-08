@@ -117,5 +117,6 @@ SSH consumes configuration in this order:
 1. Command line
 2. User config file (~/.ssh/config)
 3. System config file (/etc/ssh/ssh_config)
+
 The FIRST place a config value is found, it will be used (later values do not override earlier values). This means that you can specify options on the commandline to override values in your config file. It also means that your config file should be written with the most specific host matching options at the top, to the least specific on the bottom.
 

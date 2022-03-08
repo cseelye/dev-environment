@@ -120,3 +120,20 @@ SSH consumes configuration in this order:
 
 The FIRST place a config value is found, it will be used (later values do not override earlier values). This means that you can specify options on the commandline to override values in your config file. It also means that your config file should be written with the most specific host matching options at the top, to the least specific on the bottom.
 
+## SSH Without Password
+If you want to configure some servers to be able to SSH without typing a password, for instance to enable remote development, you need to copy your SSH key into the `authorized_keys` file on the server. The ssh-copy-id command does this for you:
+```
+ssh-copy-id -i ~/.ssh/id_ed25519.pub username@server_ip
+```
+The command will prompt you for the password for the user to connect and install the key. After the command completes successfully, the key is installed and you can now connect to the server with ssh username@server_ip and you will connect without being prompted for a password.
+
+After adding your key to the server, you may wish to apply specific config options for it in your ssh config file:
+```
+Host <simple name>
+    HostName <server_ip>
+    User <username>
+    IdentityFile ~/.ssh/id_ed25519
+```
+Add any SSH configuration options you want for this specific host. Make sure to add this host block above the `Host *` block.
+
+You can set `<simple name>` to any string you want, it does not need to be the actual hostname. This allows you to ssh to that server using that name, eg if you set `<simple name>` to `myserver`, you can then `ssh myserver` and it will use the IP address you set in the config file to connect.

@@ -112,6 +112,7 @@ chmod 600 ~/.ssh/config
 > * SSH client config - https://manpages.ubuntu.com/manpages/focal/en/man5/ssh_config.5.html
 > * SSH commandline - https://manpages.ubuntu.com/manpages/focal/en/man1/ssh.1.html
 > * SSH Daemon config - https://manpages.ubuntu.com/manpages/focal/en/man5/sshd_config.5.html
+
 SSH consumes configuration in this order:
 1. Command line
 2. User config file (~/.ssh/config)

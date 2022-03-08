@@ -83,3 +83,33 @@ Now we can create an SSH key:
 ssh-keygen -t ed25519
 ```
 Hit enter at the prompts to accept the defaults.
+
+Configure SSH by creating `~/.ssh/config`. Here is a starting point with some defaults for all hosts, add your customizations for your particular hosts:
+```
+echo <<EOF > ~/.ssh/config
+Host *
+    AddressFamily inet
+    CheckHostIp no
+    ConnectTimeout 20
+    ConnectionAttempts 1
+    GSSAPIAuthentication no
+    HashKnownHosts no
+    IdentitiesOnly yes
+    ServerAliveInterval 10
+    ServerAliveCountMax 30
+    StrictHostKeyChecking ask
+    TCPKeepAlive yes
+    User root
+    ForwardX11 no
+    ForwardX11Trusted no
+EOF
+```
+After creating the config file, make sure the file permissions are correct.
+```
+chmod 600 ~/.ssh/config
+```
+References:
+> * SSH client config - https://manpages.ubuntu.com/manpages/focal/en/man5/ssh_config.5.html
+> * SSH commandline - https://manpages.ubuntu.com/manpages/focal/en/man1/ssh.1.html
+> * SSH Daemon config - https://manpages.ubuntu.com/manpages/focal/en/man5/sshd_config.5.html
+

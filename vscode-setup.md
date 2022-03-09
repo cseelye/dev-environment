@@ -26,9 +26,6 @@ Right click the Ubuntu distro and click **Connect to WSL**. This will open a new
 ## Remote SSH Connection
 Open the Remote Explorer view and select SSH Targets. This will show each of the entries in your SSH config file. Right click one and select **Connect to Host in Current Window**
 
-
-Select **Connect Current Window to Host...**
-
 If your SSH config is correct from earlier, you should see the servers from your .ssh/config file. Select your remote server and it will start connecting. Accept the remote fingerprint of the server if prompted.
 
 If it all goes well it will connect without prompting for a password (using your SSH key). WHen it is successfully connected the green icon in the lower left will show the connection type and endpoint.

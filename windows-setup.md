@@ -6,7 +6,7 @@ Launch an elevated powershell window and install WSL2:
 ```
 wsl --install
 ```
-If you see the help text for the wsl command, that means you have WSL already installed and can continue to the next step. Otherwise, this command will download and install the default linux distro (Ubuntu).
+If you see the help text for the wsl command, that means you have WSL already installed and can continue on. Otherwise, this command will download and install the default linux distro (Ubuntu).
 
 Reboot when the install is complete, and launch **Ubuntu** from the start menu to finish the configuration and create a user. Use the same username and password as your Windows install.
 
@@ -35,6 +35,12 @@ Open each font file and click Install.
 Open **Windows Terminal** from the start menu. Th first time it is launched it should prompt you to set it as the default - do this. 
 Wile you are in Setting, go down to Profiles, select Ubuntu and click Appearance. Change the font to MesloLGS NF and set the size to 
 what you are comfortable with (I prefer 10). Save the settings and close the settings tab.
+
+![font settings](images/terminal-font.png)
+
+If you are using MobaXTerm, go the Settings menu and select Configuration -> Terminal -> Default terminal font settings and change the font to MesloLGS NF.
+
+![MobaXTerm font settings](images/moba-font.png)
 
 ## Update Ubuntu
 Update Ubuntu to the latest packages:

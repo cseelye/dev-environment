@@ -36,11 +36,11 @@ Open **Windows Terminal** from the start menu. Th first time it is launched it s
 Wile you are in Setting, go down to Profiles, select Ubuntu and click Appearance. Change the font to MesloLGS NF and set the size to 
 what you are comfortable with (I prefer 10). Save the settings and close the settings tab.
 
-![font settings](images/terminal-font.png)
+<img src="images/terminal-font.png" width=400/>
 
 If you are using MobaXTerm, go the Settings menu and select Configuration -> Terminal -> Default terminal font settings and change the font to MesloLGS NF.
 
-![MobaXTerm font settings](images/moba-font.png)
+<img src="images/moba-font.png" width="400"/>
 
 ## Update Ubuntu
 Update Ubuntu to the latest packages:

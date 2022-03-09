@@ -143,3 +143,7 @@ Host <simple name>
 Add any SSH configuration options you want for this specific host. Make sure to add this host block above the `Host *` block.
 
 You can set `<simple name>` to any string you want, it does not need to be the actual hostname. This allows you to ssh to that server using that name, eg if you set `<simple name>` to `myserver`, you can then `ssh myserver` and it will use the IP address you set in the config file to connect.
+
+## VS Code Setup
+[VS Code Setup](vscode-setup.md)
+

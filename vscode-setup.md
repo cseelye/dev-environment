@@ -1,5 +1,5 @@
 # VS Code Setup
-These instructions are for setting up Visual Studio Code on Windows or Mac. You must follow the OS specific setup instructions prior to this [Windows Setup](windows-setup.md)
+These instructions are for setting up Visual Studio Code on Windows or Mac. You must follow the OS specific setup instructions prior to this ([Windows Setup](windows-setup.md))
 
 
 

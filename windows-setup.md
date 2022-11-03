@@ -66,6 +66,14 @@ sudo apt-get update
 sudo apt-get install --no-install-recommends -y docker-ce docker-ce-cli containerd.io
 sudo groupadd docker
 sudo usermod -aG docker $USER
+mkdir -p ~/.docker
+cat << EOFF > ~/.docker/config.json
+{
+    "features": {
+        "buildkit": true
+    }
+}
+EOF
 ```
 To make the docker daemon start on boot, configure /etc/wsl.conf to launch it on startup. You should already have a wsl.conf from the earlier step, add a [boot] section to it to launch dockerd on startup:
 ```
@@ -87,15 +95,16 @@ echo $ver
 curl -fL "https://github.com/docker/docker-credential-helpers/releases/download/${ver}/docker-credential-wincred-${ver}.windows-amd64.exe" -o docker-credential-wincred.exe
 chmod +x docker-credential-wincred.exe
 sudo mv docker-credential-wincred.exe /usr/local/bin/
-mkdir ~/.docker
-cat << EOFF > ~/.docker/config.json
+mkdir -p ~/.docker
+cat << EOF > ~/.docker/config.json
 {
+    "features": {
+        "buildkit": true
+    }
     "credsStore": "wincred.exe"
 }
 EOF
 ```
-
-
 
 ## SSH Configuration
 First make sure the OpenSSH client is installed in Windows. From an elevated powershell:

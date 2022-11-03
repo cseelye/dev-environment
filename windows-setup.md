@@ -42,6 +42,8 @@ If you are using MobaXTerm, go the Settings menu and select Configuration -> Ter
 
 <img src="images/moba-font.png" width="400"/>
 
+For other terminals/editors check the linked page for instructions.
+
 ## Update Ubuntu
 Update Ubuntu to the latest packages:
 ```
@@ -57,21 +59,43 @@ Or follow the summary here.
 If you are going to copy-paste these instructions, execute some other sudo command first to authorize.
 ```
 sudo apt-get update
-sudo apt-get install --no-install-recommends -y ca-certificates curl gnupg
+sudo apt-get install --no-install-recommends -y ca-certificates curl gnupg lsb-release
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
 sudo apt-get update
 sudo apt-get install --no-install-recommends -y docker-ce docker-ce-cli containerd.io
+sudo groupadd docker
 sudo usermod -aG docker $USER
 ```
-To make the docker daemon start on boot, configure /etc/wsl.conf to launch it on startup. You should already have a wsl.conf from the WSL/SSH setup, add a [boot] section to it to launch dockerd:
+To make the docker daemon start on boot, configure /etc/wsl.conf to launch it on startup. You should already have a wsl.conf from the earlier step, add a [boot] section to it to launch dockerd on startup:
 ```
 cat <<EOF | sudo tee -a /etc/wsl.conf
 [boot]
 command = "service docker start"
 EOF
 ```
-Now test docker by closing your terminal window and opening a new one, and by rebooting and opening a new WSL terminal. You should be able to run `docker version` and see the client and server versions.
+Closing all WSL terminals you have open window, open an elevated command prompt and restart WSL
+```
+wsl --shutdown
+```
+Wait [8 seconds](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#the-8-second-rule) for WSL to restart, then open a new WSL terminal and run `docker version` to make sure everything is working.
+
+Finally, install the docker Windows credential helper to securely store docker login credentials:
+```
+ver=$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/docker/docker-credential-helpers/releases/latest | xargs basename)
+echo $ver
+curl -fL "https://github.com/docker/docker-credential-helpers/releases/download/${ver}/docker-credential-wincred-${ver}.windows-amd64.exe" -o docker-credential-wincred.exe
+chmod +x docker-credential-wincred.exe
+sudo mv docker-credential-wincred.exe /usr/local/bin/
+mkdir ~/.docker
+cat << EOFF > ~/.docker/config.json
+{
+    "credsStore": "wincred.exe"
+}
+EOF
+```
+
+
 
 ## SSH Configuration
 First make sure the OpenSSH client is installed in Windows. From an elevated powershell:
@@ -127,7 +151,7 @@ SSH consumes configuration in this order:
 The FIRST place a config value is found, it will be used (later values do not override earlier values). This means that you can specify options on the commandline to override values in your config file. It also means that your config file should be written with the most specific host matching options at the top, to the least specific on the bottom.
 
 ## SSH Without Password
-If you want to configure some servers to be able to SSH without typing a password, for instance to enable remote development, you need to copy your SSH key into the `authorized_keys` file on the server. The ssh-copy-id command does this for you:
+If you want to configure some servers to be able to SSH without typing a password, for instance to enable remote development with VS Code, you need to copy your SSH key into the `authorized_keys` file on the server. The ssh-copy-id command does this for you:
 ```
 ssh-copy-id -i ~/.ssh/id_ed25519.pub username@server_ip
 ```

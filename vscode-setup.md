@@ -4,7 +4,10 @@ These instructions are for setting up Visual Studio Code on Windows or Mac. You 
 
 
 ## Install and Extensions
-Download and install Code from Microsoft: https://code.visualstudio.com/download
+Download and install Code from Microsoft: https://code.visualstudio.com/download or using winget from a powershell terminal:
+```
+winget install Microsoft.VisualStudioCode --override '/SILENT /mergetasks="!runcode,addcontextmenufiles,addcontextmenufolders"'
+```
 
 Launch Code and switch to Extensions view, either by clicking the left hand icon that looks like several boxes, or by selecting Extensions from the view menu.
 

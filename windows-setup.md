@@ -1,6 +1,9 @@
 # Windows Setup
 These instructions are for setting up Windows 11 with WSL, docker and VS Code to do containerized development (mostly python but works with other languages as well).
 
+Please note the instructions are specific about what type of terminal to use (powershell vs WSL) so that commands are executed in the correct environment.
+
+
 ## Install and Configure WSL
 Launch an elevated powershell window and install WSL2:
 ```
@@ -10,7 +13,7 @@ If you see the help text for the wsl command, that means you have WSL already in
 
 Reboot when the install is complete, and launch **Ubuntu** from the start menu to finish the configuration and create a user. Use the same username and password as your Windows install (not required but for your sanity).
 
-Fresh WSL install on latest Win11 should have a /etc/wsl.conf already. In a WSL terminal, edit/create a wsl.conf file, make sure sytemd is enabled, and enable file metadata (this makes commands like chmod work).
+Fresh WSL install on latest Win11 should have a /etc/wsl.conf already. In a WSL terminal, edit/create a wsl.conf file, make sure systemd is enabled, and enable file metadata (this makes commands like chmod work).
 ```
 cat <<EOF | sudo tee /etc/wsl.conf
 [boot]
@@ -27,7 +30,7 @@ wsl --shutdown
 ```
 Wait [8 seconds](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#the-8-second-rule) for WSL to restart.
 
-## Terminal
+## Font Config (Optional)
 Download the Meslo Nerd monospace fonts, courtesy of [Powerlevel10k](https://github.com/romkatv/powerlevel10k/blob/master/font.md)
 * [MesloLGS NF Regular.ttf](https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf)
 * [MesloLGS NF Bold.ttf](https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf)
@@ -69,8 +72,9 @@ sudo apt-get upgrade -y
 Note this is not installing Docker Desktop, this is using the linux version of docker inside WSL.
 
 The official instructions for installing docker on Ubuntu can be used: https://docs.docker.com/engine/install/ubuntu/  
-Or follow the summary here.  
-If you are going to copy-paste these instructions, execute some other sudo command first to authorize.
+Or follow the summary here. If you are going to copy-paste these instructions, execute some other sudo command first to authorize.
+
+In a WSL terminal:
 ```
 sudo apt-get update
 sudo apt-get install --no-install-recommends -y ca-certificates curl gnupg lsb-release
@@ -89,13 +93,13 @@ cat << EOF > ~/.docker/config.json
 }
 EOF
 ```
-Close all WSL terminals you have open and then open an elevated command prompt and restart WSL
+Close all WSL terminals you have open and then open an elevated powershell prompt and restart WSL:
 ```
 wsl --shutdown
 ```
 Wait [8 seconds](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#the-8-second-rule) for WSL to restart, then open a new WSL terminal and run `docker version` to make sure everything is working.
 
-Finally, install the docker Windows credential helper to securely store docker login credentials:
+Finally, install the docker Windows credential helper to securely store docker login credentials. In a WSL terminal:
 ```
 ver=$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/docker/docker-credential-helpers/releases/latest | xargs basename)
 echo $ver
@@ -114,7 +118,7 @@ EOF
 ```
 
 ## GnuPG Agent
-After you craete or import your gpg keys, install pinentry-tty and set the gpg agent to use it:
+After you create or import your gpg keys, install pinentry-tty and set the gpg agent to use it. In a WSL terminal:
 ```
 sudo apt install pinentry-tty
 cat > ~/.gnupg/gpg-agent.conf <<EOF
@@ -123,7 +127,7 @@ EOF
 ```
 
 ## SSH Configuration
-First make sure the OpenSSH client is installed in Windows. From an elevated powershell:
+First make sure the OpenSSH client is installed in Windows. From an elevated powershell terminal:
 ```
 dism /online /Add-Capability /CapabilityName:OpenSSH.Client
 ```
@@ -229,4 +233,26 @@ You can set `<simple name>` to any string you want, it does not need to be the a
 
 
 ## VS Code Setup
-[VS Code Setup](vscode-setup.md)
+From a powershell terminal in Windows, install Code and the Remote Development extension pack:
+```
+winget install Microsoft.VisualStudioCode --override '/SILENT /mergetasks="!desktopicon,!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'
+code --install-extension ms-vscode-remote.vscode-remote-extensionpack
+```
+After the remote dev pack is installed, you should be able to launch code directly from WSL. From any WSL terminal, run `code .` and VS Code should launch and open the current directory.
+
+From a WSL terminal, install the docker extension:
+```
+code --install-extension ms-azuretools.vscode-docker
+```
+This must be done from inside WSL so that the extension is installed in the WSL environment where docker is installed.
+
+## WSL Connection with VS Code
+There are two ways to develop using code in WSL.
+
+First (and easiest), from a WSL terminal, type `code .` and VS Code will open to the current folder through WSL and you can start work just like a native Windows folder.
+
+Second, open VS Code in Windows, open the Remote Explorer view and select WSL Targets. This will show each of the WSL distros you have installed.
+
+<img src="images/wsl-explorer.png" width=400/>
+
+Right click the Ubuntu distro and click **Connect to WSL**. This will open a new window that is connected to the WSL install. From there you can open a folder and start work just like any folder, but you are working within the WSL system.

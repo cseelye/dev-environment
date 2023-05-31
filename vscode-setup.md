@@ -6,7 +6,7 @@ These instructions are for setting up Visual Studio Code on Windows or Mac. You 
 ## Install and Extensions
 Download and install Code from Microsoft: https://code.visualstudio.com/download or using winget from a powershell terminal:
 ```
-winget install Microsoft.VisualStudioCode --override '/SILENT /mergetasks="!runcode,addcontextmenufiles,addcontextmenufolders"'
+winget install Microsoft.VisualStudioCode --override '/SILENT /mergetasks="!desktopicon,!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'
 ```
 
 Launch Code and switch to Extensions view, either by clicking the left hand icon that looks like several boxes, or by selecting Extensions from the view menu.
@@ -19,7 +19,11 @@ Type "remote" in the search box and install the Remote Development extension pac
 
 
 ## WSL Connection
-Open the Remote Exporer view and select WSL Targets. This will show each of the WSL distros you have installed.
+There are two ways to develop using code in WSL.
+
+First (and easiest), from a WSL terminal, type `code .` and VS Code will open to the current folder through WSL and you can start work just like a native Windows folder.
+
+Second, open VS Code in Windows, open the Remote Exporer view and select WSL Targets. This will show each of the WSL distros you have installed.
 
 <img src="images/wsl-explorer.png" width=400/>
 

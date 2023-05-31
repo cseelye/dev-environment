@@ -8,11 +8,14 @@ wsl --install
 ```
 If you see the help text for the wsl command, that means you have WSL already installed and can continue on. Otherwise, this command will download and install the default linux distro (Ubuntu).
 
-Reboot when the install is complete, and launch **Ubuntu** from the start menu to finish the configuration and create a user. Use the same username and password as your Windows install.
+Reboot when the install is complete, and launch **Ubuntu** from the start menu to finish the configuration and create a user. Use the same username and password as your Windows install (not required but for your sanity).
 
-In a WSL terminal, create a wsl.conf file and enable file metadata (this makes commands like chmod work).
+Fresh WSL install on latest Win11 should have a /etc/wsl.conf already. In a WSL terminal, edit/create a wsl.conf file, make sure sytemd is enabled, and enable file metadata (this makes commands like chmod work).
 ```
 cat <<EOF | sudo tee /etc/wsl.conf
+[boot]
+systemd=true
+
 [automount]
 options = "metadata"
 EOF
@@ -44,6 +47,17 @@ If you are using MobaXTerm, go the Settings menu and select Configuration -> Ter
 
 For other terminals/editors check the linked page for instructions.
 
+## MobaXterm fixes
+If you are using MobaXterm with ZSH and OMZ, add these keybindings to your .zshrc:
+```
+bindkey '^[[H' beginning-of-line # Home
+bindkey '^[[F' end-of-line # End
+bindkey '^[[2~' overwrite-mode # Insert
+bindkey '^[[3~' delete-char # Delete
+bindkey '^?' backward-delete-char # Backspace
+```
+You may only need the home/end keys and not the others.
+
 ## Update Ubuntu
 Update Ubuntu to the latest packages:
 ```
@@ -67,7 +81,7 @@ sudo apt-get install --no-install-recommends -y docker-ce docker-ce-cli containe
 sudo groupadd docker
 sudo usermod -aG docker $USER
 mkdir -p ~/.docker
-cat << EOFF > ~/.docker/config.json
+cat << EOF > ~/.docker/config.json
 {
     "features": {
         "buildkit": true
@@ -75,14 +89,7 @@ cat << EOFF > ~/.docker/config.json
 }
 EOF
 ```
-To make the docker daemon start on boot, configure /etc/wsl.conf to launch it on startup. You should already have a wsl.conf from the earlier step, add a [boot] section to it to launch dockerd on startup:
-```
-cat <<EOF | sudo tee -a /etc/wsl.conf
-[boot]
-command = "service docker start"
-EOF
-```
-Closing all WSL terminals you have open window, open an elevated command prompt and restart WSL
+Close all WSL terminals you have open and then open an elevated command prompt and restart WSL
 ```
 wsl --shutdown
 ```
@@ -103,6 +110,15 @@ cat << EOF > ~/.docker/config.json
     }
     "credsStore": "wincred.exe"
 }
+EOF
+```
+
+## GnuPG Agent
+After you craete or import your gpg keys, install pinentry-tty and set the gpg agent to use it:
+```
+sudo apt install pinentry-tty
+cat > ~/.gnupg/gpg-agent.conf <<EOF
+pinentry-program /usr/bin/pinentry-tty
 EOF
 ```
 
@@ -127,10 +143,12 @@ Configure SSH by creating `~/.ssh/config`. Here is a starting point with some de
 ```
 echo <<EOF > ~/.ssh/config
 Host *
+    AddKeysToAgent yes
     AddressFamily inet
     CheckHostIp no
     ConnectTimeout 20
     ConnectionAttempts 1
+    ForwardAgent yes
     GSSAPIAuthentication no
     HashKnownHosts no
     IdentitiesOnly yes
@@ -159,6 +177,38 @@ SSH consumes configuration in this order:
 
 The FIRST place a config value is found, it will be used (later values do not override earlier values). This means that you can specify options on the commandline to override values in your config file. It also means that your config file should be written with the most specific host matching options at the top, to the least specific on the bottom.
 
+## SSH Agent
+Adding your SSH key to an agent will automatically make it available to ssh, and allow it to be forwarded so you can use it for multiple ssh hops.
+
+Here is a snippet for .bashrc that you can use to automatically initialize your agent with a list of keys (also make sure ssh-agent is in your list of plugins):
+```
+ssh_keys=( id_ed25519 github_rsa )
+if which ssh-agent &>/dev/null; then
+    [[ -z "$SSH_AUTH_SOCK" ]] && eval $(ssh-agent -s) &>/dev/null
+    ssh-add -D &>/dev/null
+    for f in "${ssh_keys[@]}"; do
+        if [[ -e "$HOME/.ssh/$f" ]]; then
+            DISPLAY= SSH_ASKPASS= ssh-add "$HOME/.ssh/$f" < /dev/null &>/dev/null
+        fi
+    done
+fi
+```
+
+Here is a similar snippet for .zshrc using zsh/omz:
+```
+ssh_keys=( id_ed25519 github_rsa )
+add_keys=()
+for kf in "${ssh_keys[@]}"; do
+    [[ -e ~/.ssh/${kf} ]] && add_keys+=(${kf})
+done
+zstyle :omz:plugins:ssh-agent quiet yes
+zstyle :omz:plugins:ssh-agent agent-forwarding yes
+if [[ -n ${add_keys} ]]; then
+    zstyle :omz:plugins:ssh-agent identities ${add_keys}
+fi
+```
+
+
 ## SSH Without Password
 If you want to configure some servers to be able to SSH without typing a password, for instance to enable remote development with VS Code, you need to copy your SSH key into the `authorized_keys` file on the server. The ssh-copy-id command does this for you:
 ```
@@ -177,6 +227,6 @@ Add any SSH configuration options you want for this specific host. Make sure to 
 
 You can set `<simple name>` to any string you want, it does not need to be the actual hostname. This allows you to ssh to that server using that name, eg if you set `<simple name>` to `myserver`, you can then `ssh myserver` and it will use the IP address you set in the config file to connect.
 
+
 ## VS Code Setup
 [VS Code Setup](vscode-setup.md)
-
